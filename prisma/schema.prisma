@@ -13,8 +13,119 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Peran {
+  PASIEN
+  DOKTER
+  PERAWAT
+  ADMIN
+}
+
+enum JenisKelamin {
+  LAKI_LAKI
+  PEREMPUAN
+}
+
+enum Shift {
+  PAGI
+  SIANG
+  MALAM
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
+  id              Int          @id @default(autoincrement())
+  nama            String       @db.VarChar(100)
+  alamat          String?      @db.VarChar(255)
+  tanggalLahir    DateTime?
+  jenisKelamin    JenisKelamin
+  nomorTelepon    String       @db.VarChar(20)
+  alamatEmail     String?      @db.VarChar(100)
+  spesialisasi    String?      @db.VarChar(100)
+  shift           Shift?
+  peran           Peran         // Enum: "Pasien", "Dokter", "Perawat"
+  JanjiTemuPasien JanjiTemu[]  @relation("PasienJanjiTemu")
+  JanjiTemuDokter JanjiTemu[]  @relation("DokterJanjiTemu")
+  RawatInap       RawatInap[]
+  ResepPasien     Resep[]      @relation("PasienResep")
+  ResepDokter     Resep[]      @relation("DokterResep")
+  Tagihan         Tagihan[]
+
+  @@map("users")
+}
+
+model JanjiTemu {
+  id       Int      @id @default(autoincrement())
+  pasien   User     @relation("PasienJanjiTemu", fields: [pasienId], references: [id])
+  dokter   User     @relation("DokterJanjiTemu", fields: [dokterId], references: [id])
+  pasienId Int
+  dokterId Int
+  tanggal  DateTime
+  waktu    DateTime
+
+  @@map("janji_temu")
+}
+
+model RawatInap {
+  id            Int       @id @default(autoincrement())
+  pasien        User      @relation(fields: [pasienId], references: [id])
+  kamar         Kamar     @relation(fields: [kamarId], references: [id])
+  pasienId      Int
+  kamarId       Int
+  tanggalMasuk  DateTime
+  tanggalKeluar DateTime?
+
+  @@map("rawat_inap")
+}
+
+model Kamar {
+  id           Int         @id @default(autoincrement())
+  jenisKamar   String      @db.VarChar(100)
+  tarifPerHari Decimal
+  RawatInap    RawatInap[]
+
+  @@map("kamar")
+}
+
+model Obat {
+  id          Int           @id @default(autoincrement())
+  namaObat    String        @db.VarChar(100)
+  deskripsi   String        @db.VarChar(255)
+  harga       Decimal
+  ResepDetail ResepDetail[]
+
+  @@map("obat")
+}
+
+model Resep {
+  id          Int           @id @default(autoincrement())
+  pasien      User          @relation("PasienResep", fields: [pasienId], references: [id])
+  dokter      User          @relation("DokterResep", fields: [dokterId], references: [id])
+  pasienId    Int
+  dokterId    Int
+  tanggal     DateTime
+  totalHarga  Decimal
+  ResepDetail ResepDetail[]
+
+  @@map("resep")
+}
+
+model ResepDetail {
+  id      Int     @id @default(autoincrement())
+  resep   Resep   @relation(fields: [resepId], references: [id])
+  obat    Obat    @relation(fields: [obatId], references: [id])
+  resepId Int
+  obatId  Int
+  jumlah  Int
+  harga   Decimal
+
+  @@map("resep_detail")
+}
+
+model Tagihan {
+  id          Int      @id @default(autoincrement())
+  pasien      User     @relation(fields: [pasienId], references: [id])
+  pasienId    Int
+  tanggal     DateTime
+  totalJumlah Decimal
+
+  @@map("tagihan")
 }
