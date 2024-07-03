@@ -32,21 +32,23 @@ enum Shift {
 }
 
 model User {
-  id              Int          @id @default(autoincrement())
-  nama            String       @db.VarChar(100)
-  alamat          String?      @db.VarChar(255)
+  id              Int           @id @default(autoincrement())
+  nama            String        @db.VarChar(100)
+  username        String        @db.VarChar(100)
+  password        String        @db.VarChar(255)
+  alamat          String?       @db.VarChar(255)
   tanggalLahir    DateTime?
-  jenisKelamin    JenisKelamin
-  nomorTelepon    String       @db.VarChar(20)
-  alamatEmail     String?      @db.VarChar(100)
-  spesialisasi    String?      @db.VarChar(100)
+  jenisKelamin    JenisKelamin?
+  nomorTelepon    String?       @db.VarChar(20)
+  alamatEmail     String?       @db.VarChar(100)
+  spesialisasi    String?       @db.VarChar(100)
   shift           Shift?
-  peran           Peran         // Enum: "Pasien", "Dokter", "Perawat"
-  JanjiTemuPasien JanjiTemu[]  @relation("PasienJanjiTemu")
-  JanjiTemuDokter JanjiTemu[]  @relation("DokterJanjiTemu")
+  peran           Peran // Enum: "Pasien", "Dokter", "Perawat"
+  JanjiTemuPasien JanjiTemu[]   @relation("PasienJanjiTemu")
+  JanjiTemuDokter JanjiTemu[]   @relation("DokterJanjiTemu")
   RawatInap       RawatInap[]
-  ResepPasien     Resep[]      @relation("PasienResep")
-  ResepDokter     Resep[]      @relation("DokterResep")
+  ResepPasien     Resep[]       @relation("PasienResep")
+  ResepDokter     Resep[]       @relation("DokterResep")
   Tagihan         Tagihan[]
 
   @@map("users")
