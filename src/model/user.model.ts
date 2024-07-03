@@ -17,7 +17,7 @@ export class UserResponse {
   username: string;
 }
 
-export class Auth {
+export class AuthResponse {
   akses_token: string;
 }
 

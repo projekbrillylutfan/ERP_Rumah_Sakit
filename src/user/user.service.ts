@@ -2,7 +2,7 @@ import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { ValidationService } from '../common/validation.sevice';
 import {
-  Auth,
+  AuthResponse,
   LoginUserRequest,
   RegisterUserRequest,
   UserResponse,
@@ -12,7 +12,8 @@ import { UserValidation } from './user.validation';
 import { UserRepository } from './user.repository';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -44,7 +45,7 @@ export class UserService {
     };
   }
 
-  async loginPasien(req: LoginUserRequest): Promise<Auth> {
+  async loginPasien(req: LoginUserRequest): Promise<AuthResponse> {
     this.logger.debug(`Login Pasien user ${JSON.stringify(req)}`);
     const loginPasienReq: LoginUserRequest = this.validationService.validate(
       UserValidation.LOGIN,
@@ -67,12 +68,12 @@ export class UserService {
       throw new HttpException('Password not valid', 400);
     }
 
-    const jwtSecret = this.configService.get<string>('JWT_SECRET');
+    const jwtSecret = 'ayam';
     const jwtExpire = '24h';
 
     const token = jwt.sign(
       {
-        sub: checkPasien.username,
+        username: checkPasien.username,
       },
       jwtSecret,
       {
@@ -82,6 +83,13 @@ export class UserService {
 
     return {
       akses_token: token,
+    };
+  }
+
+  async getUser(user: User): Promise<UserResponse> {
+    return {
+      nama: user.nama,
+      username: user.username,
     };
   }
 }
