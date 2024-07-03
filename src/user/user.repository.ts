@@ -8,7 +8,7 @@ export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
   async totalShameUser(username: string): Promise<number> {
-    return this.prisma.user.count({
+    return await this.prisma.user.count({
       where: {
         username: username,
       },
@@ -20,8 +20,16 @@ export class UserRepository {
       ...req,
       peran: Peran.PASIEN, // atau nilai default yang sesuai
     };
-    return this.prisma.user.create({
+    return await this.prisma.user.create({
       data: userData,
+    });
+  }
+
+  async checkPasien(username: string): Promise<User | null> {
+    return await this.prisma.user.findUnique({
+      where: {
+        username: username,
+      },
     });
   }
 }

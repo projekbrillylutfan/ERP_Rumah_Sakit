@@ -16,3 +16,12 @@ export class UserResponse {
   nama: string;
   username: string;
 }
+
+export class Auth {
+  akses_token: string;
+}
+
+export class LoginUserRequest {
+  username: string;
+  password: string;
+}

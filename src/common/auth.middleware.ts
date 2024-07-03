@@ -17,10 +17,10 @@ export class AuthMiddleware implements NestMiddleware {
       const decoded = jwt.verify(
         token,
         this.configService.get<string>('JWT_SECRET'),
-      );
+      ) as { username: string };
       const user = await this.prismaService.user.findUnique({
         where: {
-          id: decoded.sub,
+          username: decoded.username,
         },
       });
 

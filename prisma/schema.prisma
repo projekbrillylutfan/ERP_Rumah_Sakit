@@ -34,7 +34,7 @@ enum Shift {
 model User {
   id              Int           @id @default(autoincrement())
   nama            String        @db.VarChar(100)
-  username        String        @db.VarChar(100)
+  username        String        @unique @db.VarChar(100)
   password        String        @db.VarChar(255)
   alamat          String?       @db.VarChar(255)
   tanggalLahir    DateTime?
