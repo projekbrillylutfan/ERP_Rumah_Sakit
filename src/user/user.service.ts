@@ -16,6 +16,7 @@ export class UserService {
   ) {}
 
   async registerPasien(req: RegisterUserRequest): Promise<UserResponse> {
+    this.logger.debug(`Register new Pasien user ${JSON.stringify(req)}`);
     const registerReq: RegisterUserRequest = this.validationService.validate(
       UserValidation.REGISTER_PASIEN,
       req,
