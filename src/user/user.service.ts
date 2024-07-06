@@ -5,6 +5,7 @@ import {
   AuthResponse,
   LoginUserRequest,
   RegisterUserRequest,
+  UpdateUserRequest,
   UserResponse,
 } from '../model/user.model';
 import { Logger } from 'winston';
@@ -68,7 +69,7 @@ export class UserService {
       throw new HttpException('Password not valid', 400);
     }
 
-    const jwtSecret = 'ayam';
+    const jwtSecret = this.configService.get('JWT_SECRET');
     const jwtExpire = '24h';
 
     const token = jwt.sign(
@@ -90,6 +91,24 @@ export class UserService {
     return {
       nama: user.nama,
       username: user.username,
+    };
+  }
+
+  async updateUser(user: User, req: UpdateUserRequest): Promise<UserResponse> {
+    this.logger.debug(`Update user ${JSON.stringify(req)}`);
+
+    const updateReq: UpdateUserRequest = this.validationService.validate(
+      UserValidation.UPDATE,
+      req,
+    );
+
+    updateReq.password = await bcrypt.hash(updateReq.password, 10);
+
+    const result = await this.userRepo.updateUser(user, updateReq);
+
+    return {
+      nama: result.nama,
+      username: result.username,
     };
   }
 }

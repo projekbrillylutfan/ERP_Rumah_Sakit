@@ -25,3 +25,10 @@ export class LoginUserRequest {
   username: string;
   password: string;
 }
+
+export class UpdateUserRequest {
+  id: number;
+  username: string;
+  password: string;
+  peran?: Peran;
+}

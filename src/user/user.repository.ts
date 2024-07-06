@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Peran, User } from '@prisma/client';
-import { PrismaService } from 'src/common/prisma.service';
-import { RegisterUserRequest } from 'src/model/user.model';
+import { PrismaService } from '../common/prisma.service';
+import { RegisterUserRequest, UpdateUserRequest } from '../model/user.model';
 
 @Injectable()
 export class UserRepository {
@@ -30,6 +30,15 @@ export class UserRepository {
       where: {
         username: username,
       },
+    });
+  }
+
+  async updateUser(user: User, req: UpdateUserRequest): Promise<User> {
+    return await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: req,
     });
   }
 }
