@@ -5,6 +5,7 @@ import {
   AuthResponse,
   LoginUserRequest,
   RegisterUserRequest,
+  UpdateUserRequest,
   UserResponse,
 } from '../model/user.model';
 import { Logger } from 'winston';
@@ -45,6 +46,28 @@ export class UserService {
     };
   }
 
+  async registerDokter(req: RegisterUserRequest): Promise<UserResponse> {
+    this.logger.debug(`Register new Dokter user ${JSON.stringify(req)}`);
+    const dokterReq: RegisterUserRequest = this.validationService.validate(
+      UserValidation.REGISTER,
+      req,
+    );
+
+    const shameDokter = await this.userRepo.totalShameUser(dokterReq.username);
+    if (shameDokter != 0) {
+      throw new HttpException('Dokter already taken', 400);
+    }
+
+    dokterReq.password = await bcrypt.hash(dokterReq.password, 10);
+
+    const dokter = await this.userRepo.addDokter(dokterReq);
+    return {
+      nama: dokter.nama,
+      username: dokter.username,
+      peran: dokter.peran,
+    };
+  }
+
   async loginPasien(req: LoginUserRequest): Promise<AuthResponse> {
     this.logger.debug(`Login Pasien user ${JSON.stringify(req)}`);
     const loginPasienReq: LoginUserRequest = this.validationService.validate(
@@ -68,7 +91,7 @@ export class UserService {
       throw new HttpException('Password not valid', 400);
     }
 
-    const jwtSecret = 'ayam';
+    const jwtSecret = this.configService.get('JWT_SECRET');
     const jwtExpire = '24h';
 
     const token = jwt.sign(
@@ -90,6 +113,24 @@ export class UserService {
     return {
       nama: user.nama,
       username: user.username,
+    };
+  }
+
+  async updateUser(user: User, req: UpdateUserRequest): Promise<UserResponse> {
+    this.logger.debug(`Update user ${JSON.stringify(req)}`);
+
+    const updateReq: UpdateUserRequest = this.validationService.validate(
+      UserValidation.UPDATE,
+      req,
+    );
+
+    updateReq.password = await bcrypt.hash(updateReq.password, 10);
+
+    const result = await this.userRepo.updateUser(user, updateReq);
+
+    return {
+      nama: result.nama,
+      username: result.username,
     };
   }
 }

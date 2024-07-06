@@ -12,7 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
 
   async use(req: any, res: any, next: (error?: any) => void) {
     const token = req.headers['authorization'] as string;
-    const jwtSecret = 'ayam';
+    const jwtSecret = this.configService.get('JWT_SECRET');
 
     if (token) {
       const decoded = jwt.verify(token, jwtSecret) as { username: string };
