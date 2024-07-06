@@ -46,6 +46,28 @@ export class UserService {
     };
   }
 
+  async registerDokter(req: RegisterUserRequest): Promise<UserResponse> {
+    this.logger.debug(`Register new Dokter user ${JSON.stringify(req)}`);
+    const dokterReq: RegisterUserRequest = this.validationService.validate(
+      UserValidation.REGISTER,
+      req,
+    );
+
+    const shameDokter = await this.userRepo.totalShameUser(dokterReq.username);
+    if (shameDokter != 0) {
+      throw new HttpException('Dokter already taken', 400);
+    }
+
+    dokterReq.password = await bcrypt.hash(dokterReq.password, 10);
+
+    const dokter = await this.userRepo.addDokter(dokterReq);
+    return {
+      nama: dokter.nama,
+      username: dokter.username,
+      peran: dokter.peran,
+    };
+  }
+
   async loginPasien(req: LoginUserRequest): Promise<AuthResponse> {
     this.logger.debug(`Login Pasien user ${JSON.stringify(req)}`);
     const loginPasienReq: LoginUserRequest = this.validationService.validate(

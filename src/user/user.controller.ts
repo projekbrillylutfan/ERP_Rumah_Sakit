@@ -26,6 +26,18 @@ export class UserController {
     };
   }
 
+  @Post('/dokter')
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async registerDokter(
+    @Body() req: RegisterUserRequest,
+  ): Promise<WebResponse<UserResponse>> {
+    const result = await this.userService.registerDokter(req);
+    return {
+      data: result,
+    };
+  }
+
   @Post('/login')
   @HttpCode(200)
   async loginUser(
@@ -38,7 +50,6 @@ export class UserController {
   }
 
   @Get('/current')
-  @Roles(['PASIEN'])
   @HttpCode(200)
   async get(@Auth() user: User): Promise<WebResponse<UserResponse>> {
     const result = await this.userService.getUser(user);

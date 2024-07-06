@@ -25,6 +25,17 @@ export class UserRepository {
     });
   }
 
+  async addDokter(req: RegisterUserRequest): Promise<User> {
+    const dokterData = {
+      ...req,
+      peran: Peran.DOKTER, // atau nilai default yang sesuai
+    };
+
+    return await this.prisma.user.create({
+      data: dokterData,
+    });
+  }
+
   async checkPasien(username: string): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: {
