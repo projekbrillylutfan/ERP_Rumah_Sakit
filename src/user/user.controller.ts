@@ -38,6 +38,18 @@ export class UserController {
     };
   }
 
+  @Post('/perawat')
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async registerPerawat(
+    @Body() req: RegisterUserRequest,
+  ): Promise<WebResponse<UserResponse>> {
+    const result = await this.userService.registerPerawat(req);
+    return {
+      data: result,
+    };
+  }
+
   @Post('/login')
   @HttpCode(200)
   async loginUser(

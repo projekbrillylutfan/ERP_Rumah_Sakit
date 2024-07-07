@@ -68,6 +68,28 @@ export class UserService {
     };
   }
 
+  async registerPerawat(req: RegisterUserRequest): Promise<UserResponse> {
+    this.logger.debug(`Register new Dokter user ${JSON.stringify(req)}`);
+    const perawatReq: RegisterUserRequest = this.validationService.validate(
+      UserValidation.REGISTER,
+      req,
+    );
+
+    const shameDokter = await this.userRepo.totalShameUser(perawatReq.username);
+    if (shameDokter != 0) {
+      throw new HttpException('Perawat already taken', 400);
+    }
+
+    perawatReq.password = await bcrypt.hash(perawatReq.password, 10);
+
+    const perawat = await this.userRepo.addPerawat(perawatReq);
+    return {
+      nama: perawat.nama,
+      username: perawat.username,
+      peran: perawat.peran,
+    };
+  }
+
   async loginPasien(req: LoginUserRequest): Promise<AuthResponse> {
     this.logger.debug(`Login Pasien user ${JSON.stringify(req)}`);
     const loginPasienReq: LoginUserRequest = this.validationService.validate(
