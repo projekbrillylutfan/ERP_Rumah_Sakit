@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { KamarService } from './kamar.service';
 import { CreateKamarRequest, KamarResponse } from 'src/model/kamar.model';
 import { WebResponse } from '../model/web.model';
@@ -14,11 +14,21 @@ export class KamarController {
   @Roles(['ADMIN'])
   @HttpCode(200)
   async createKamar(
-    @Body() req: CreateKamarRequest,
     @Auth() user: User,
+    @Body() req: CreateKamarRequest,
   ): Promise<WebResponse<KamarResponse>> {
-    const result = await this.kamarService.createKamar(req);
+    const result = await this.kamarService.createKamar(user, req);
 
+    return {
+      data: result,
+    };
+  }
+
+  @Get()
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async getKamarAll(): Promise<WebResponse<KamarResponse[]>> {
+    const result = await this.kamarService.getKamar();
     return {
       data: result,
     };

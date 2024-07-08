@@ -6,4 +6,6 @@ export class CreateKamarRequest {
 export class KamarResponse {
   jenisKamar: string;
   tarifPerHari: number;
+  createdBy?: string;
+  updatedBy?: string;
 }
