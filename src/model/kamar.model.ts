@@ -14,3 +14,9 @@ export class KamarResponse {
 export class GetKamarById {
   id: number;
 }
+
+export class UpdateKamarRequest {
+  id: number;
+  jenisKamar: string;
+  tarifPerHari: number;
+}

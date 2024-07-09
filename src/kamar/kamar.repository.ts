@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Kamar, User } from '@prisma/client';
 import { PrismaService } from '../common/prisma.service';
-import { CreateKamarRequest } from '../model/kamar.model';
+import { CreateKamarRequest, UpdateKamarRequest } from '../model/kamar.model';
 
 @Injectable()
 export class KamarRepository {
@@ -26,6 +26,19 @@ export class KamarRepository {
       where: {
         id: id,
       },
+    });
+  }
+
+  async updateKamar(user: User, req: UpdateKamarRequest): Promise<Kamar> {
+    const kamarData = {
+      ...req,
+      updatedBy: user.username,
+    };
+    return await this.prisma.kamar.update({
+      where: {
+        id: req.id,
+      },
+      data: kamarData,
     });
   }
 }

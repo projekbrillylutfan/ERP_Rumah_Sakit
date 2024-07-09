@@ -6,9 +6,14 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Put,
 } from '@nestjs/common';
 import { KamarService } from './kamar.service';
-import { CreateKamarRequest, KamarResponse } from 'src/model/kamar.model';
+import {
+  CreateKamarRequest,
+  KamarResponse,
+  UpdateKamarRequest,
+} from 'src/model/kamar.model';
 import { WebResponse } from '../model/web.model';
 import { Roles } from '../role/role.decorator';
 import { Auth } from '../common/auth.decorator';
@@ -53,6 +58,24 @@ export class KamarController {
     };
     const result = await this.kamarService.getKamarById(getKamarReq);
 
+    return {
+      data: result,
+    };
+  }
+
+  @Put('/:kamarId')
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async updateKamar(
+    @Auth() user: User,
+    @Param('kamarId', ParseIntPipe) kamarId: number,
+    @Body() req: UpdateKamarRequest,
+  ): Promise<WebResponse<KamarResponse>> {
+    const updateKamarReq = {
+      id: kamarId,
+      ...req,
+    };
+    const result = await this.kamarService.updateKamar(user, updateKamarReq);
     return {
       data: result,
     };

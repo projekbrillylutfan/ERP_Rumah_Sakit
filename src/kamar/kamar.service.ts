@@ -7,6 +7,7 @@ import {
   CreateKamarRequest,
   GetKamarById,
   KamarResponse,
+  UpdateKamarRequest,
 } from 'src/model/kamar.model';
 import { KamarValidation } from './kamar.validation';
 import { Kamar, User } from '@prisma/client';
@@ -67,6 +68,23 @@ export class KamarService {
 
     const kamar = await this.checkKamar(getKamar.id);
 
+    return this.toKamarResponse(kamar);
+  }
+
+  async updateKamar(
+    user: User,
+    req: UpdateKamarRequest,
+  ): Promise<KamarResponse> {
+    this.logger.debug(`Update Kamar ${JSON.stringify(req)}`);
+
+    const updateReq: UpdateKamarRequest = this.validationService.validate(
+      KamarValidation.UPDATE,
+      req,
+    );
+
+    await this.checkKamar(updateReq.id);
+
+    const kamar = await this.kamarRepo.updateKamar(user, updateReq);
     return this.toKamarResponse(kamar);
   }
 }
