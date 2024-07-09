@@ -1,15 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { Kamar } from '@prisma/client';
+import { Kamar, User } from '@prisma/client';
 import { PrismaService } from '../common/prisma.service';
-import { CreateKamarRequest } from '../model/kamar.model';
+import { CreateKamarRequest, UpdateKamarRequest } from '../model/kamar.model';
 
 @Injectable()
 export class KamarRepository {
   constructor(private prisma: PrismaService) {}
 
-  async kamarCreate(req: CreateKamarRequest): Promise<Kamar> {
+  async kamarCreate(user: User, req: CreateKamarRequest): Promise<Kamar> {
+    const kamarData = {
+      ...req,
+      createdBy: user.username,
+    };
     return await this.prisma.kamar.create({
-      data: req,
+      data: kamarData,
+    });
+  }
+
+  async getKamarAll(): Promise<Kamar[]> {
+    return await this.prisma.kamar.findMany();
+  }
+
+  async checkKamar(id: number): Promise<Kamar> {
+    return await this.prisma.kamar.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async updateKamar(user: User, req: UpdateKamarRequest): Promise<Kamar> {
+    const kamarData = {
+      ...req,
+      updatedBy: user.username,
+    };
+    return await this.prisma.kamar.update({
+      where: {
+        id: req.id,
+      },
+      data: kamarData,
+    });
+  }
+
+  async deleteKamar(id: number): Promise<Kamar> {
+    return await this.prisma.kamar.delete({
+      where: {
+        id: id,
+      },
     });
   }
 }

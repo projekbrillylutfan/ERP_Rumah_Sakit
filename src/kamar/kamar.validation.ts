@@ -5,4 +5,18 @@ export class KamarValidation {
     jenisKamar: z.string().min(1).max(100),
     tarifPerHari: z.number().positive(),
   });
+
+  static readonly GETID: ZodType = z.object({
+    id: z.number().positive(),
+  });
+
+  static readonly UPDATE: ZodType = z.object({
+    id: z.number().positive(),
+    jenisKamar: z.string().min(1).max(100),
+    tarifPerHari: z.number().positive(),
+  });
+
+  static readonly DELETE: ZodType = z.object({
+    id: z.number().positive(),
+  });
 }

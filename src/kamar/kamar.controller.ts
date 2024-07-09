@@ -1,6 +1,20 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { KamarService } from './kamar.service';
-import { CreateKamarRequest, KamarResponse } from 'src/model/kamar.model';
+import {
+  CreateKamarRequest,
+  KamarResponse,
+  UpdateKamarRequest,
+} from 'src/model/kamar.model';
 import { WebResponse } from '../model/web.model';
 import { Roles } from '../role/role.decorator';
 import { Auth } from '../common/auth.decorator';
@@ -14,11 +28,70 @@ export class KamarController {
   @Roles(['ADMIN'])
   @HttpCode(200)
   async createKamar(
-    @Body() req: CreateKamarRequest,
     @Auth() user: User,
+    @Body() req: CreateKamarRequest,
   ): Promise<WebResponse<KamarResponse>> {
-    const result = await this.kamarService.createKamar(req);
+    const result = await this.kamarService.createKamar(user, req);
 
+    return {
+      data: result,
+    };
+  }
+
+  @Get()
+  @Roles(['PASIEN', 'ADMIN', 'DOKTER', 'PERAWAT'])
+  @HttpCode(200)
+  async getKamarAll(): Promise<WebResponse<KamarResponse[]>> {
+    const result = await this.kamarService.getKamar();
+    return {
+      data: result,
+    };
+  }
+
+  @Get('/:kamarId')
+  @Roles(['PASIEN', 'ADMIN', 'DOKTER', 'PERAWAT'])
+  @HttpCode(200)
+  async getKamarById(
+    @Param('kamarId', ParseIntPipe) kamarId: number,
+  ): Promise<WebResponse<KamarResponse>> {
+    const getKamarReq = {
+      id: kamarId,
+    };
+    const result = await this.kamarService.getKamarById(getKamarReq);
+
+    return {
+      data: result,
+    };
+  }
+
+  @Put('/:kamarId')
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async updateKamar(
+    @Auth() user: User,
+    @Param('kamarId', ParseIntPipe) kamarId: number,
+    @Body() req: UpdateKamarRequest,
+  ): Promise<WebResponse<KamarResponse>> {
+    const updateKamarReq = {
+      id: kamarId,
+      ...req,
+    };
+    const result = await this.kamarService.updateKamar(user, updateKamarReq);
+    return {
+      data: result,
+    };
+  }
+
+  @Delete('/:kamarId')
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async deleteKamar(
+    @Param('kamarId', ParseIntPipe) kamarId: number,
+  ): Promise<WebResponse<KamarResponse>> {
+    const deleteKamarReq = {
+      id: kamarId,
+    };
+    const result = await this.kamarService.deleteKamar(deleteKamarReq);
     return {
       data: result,
     };

@@ -82,6 +82,8 @@ model Kamar {
   id           Int         @id @default(autoincrement())
   jenisKamar   String      @db.VarChar(100)
   tarifPerHari Decimal
+  createdBy    String?
+  updatedBy    String?
   RawatInap    RawatInap[]
 
   @@map("kamar")
