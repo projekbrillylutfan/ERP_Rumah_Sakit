@@ -155,4 +155,13 @@ export class UserService {
       username: result.username,
     };
   }
+
+  async checkUser(id: number): Promise<User> {
+    const user = await this.userRepo.checkUser(id);
+    if (!user) {
+      throw new HttpException('User not found', 404);
+    }
+
+    return user;
+  }
 }

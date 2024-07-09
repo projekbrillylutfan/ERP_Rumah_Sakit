@@ -74,6 +74,8 @@ model RawatInap {
   kamarId       Int
   tanggalMasuk  DateTime
   tanggalKeluar DateTime?
+  createdBy     String?
+  updatedBy     String?
 
   @@map("rawat_inap")
 }
