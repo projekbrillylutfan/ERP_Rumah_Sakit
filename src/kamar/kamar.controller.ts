@@ -33,7 +33,7 @@ export class KamarController {
   }
 
   @Get()
-  @Roles(['ADMIN'])
+  @Roles(['PASIEN', 'ADMIN', 'DOKTER', 'PERAWAT'])
   @HttpCode(200)
   async getKamarAll(): Promise<WebResponse<KamarResponse[]>> {
     const result = await this.kamarService.getKamar();
