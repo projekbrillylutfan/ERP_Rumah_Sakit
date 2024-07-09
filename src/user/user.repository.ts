@@ -15,6 +15,14 @@ export class UserRepository {
     });
   }
 
+  async checkUser(id: number): Promise<User> {
+    return await this.prisma.user.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
+
   async addPasien(req: RegisterUserRequest): Promise<User> {
     const userData = {
       ...req,
