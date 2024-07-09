@@ -20,3 +20,7 @@ export class UpdateKamarRequest {
   jenisKamar: string;
   tarifPerHari: number;
 }
+
+export class DeleteKamarRequest {
+  id: number;
+}

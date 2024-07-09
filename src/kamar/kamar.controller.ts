@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   Param,
@@ -76,6 +77,21 @@ export class KamarController {
       ...req,
     };
     const result = await this.kamarService.updateKamar(user, updateKamarReq);
+    return {
+      data: result,
+    };
+  }
+
+  @Delete('/:kamarId')
+  @Roles(['ADMIN'])
+  @HttpCode(200)
+  async deleteKamar(
+    @Param('kamarId', ParseIntPipe) kamarId: number,
+  ): Promise<WebResponse<KamarResponse>> {
+    const deleteKamarReq = {
+      id: kamarId,
+    };
+    const result = await this.kamarService.deleteKamar(deleteKamarReq);
     return {
       data: result,
     };

@@ -5,6 +5,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { KamarRepository } from './kamar.repository';
 import {
   CreateKamarRequest,
+  DeleteKamarRequest,
   GetKamarById,
   KamarResponse,
   UpdateKamarRequest,
@@ -85,6 +86,18 @@ export class KamarService {
     await this.checkKamar(updateReq.id);
 
     const kamar = await this.kamarRepo.updateKamar(user, updateReq);
+    return this.toKamarResponse(kamar);
+  }
+
+  async deleteKamar(req: DeleteKamarRequest): Promise<KamarResponse> {
+    const deleteReq: DeleteKamarRequest = this.validationService.validate(
+      KamarValidation.DELETE,
+      req,
+    );
+
+    await this.checkKamar(deleteReq.id);
+
+    const kamar = await this.kamarRepo.deleteKamar(deleteReq.id);
     return this.toKamarResponse(kamar);
   }
 }

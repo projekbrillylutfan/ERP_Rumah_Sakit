@@ -41,4 +41,12 @@ export class KamarRepository {
       data: kamarData,
     });
   }
+
+  async deleteKamar(id: number): Promise<Kamar> {
+    return await this.prisma.kamar.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
 }
