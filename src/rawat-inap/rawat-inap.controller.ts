@@ -1,4 +1,5 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('rawat-inap')
+// role perawat atau admin
+@Controller('/api/rawat-inap')
 export class RawatInapController {}
