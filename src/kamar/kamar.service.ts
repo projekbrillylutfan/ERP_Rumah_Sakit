@@ -1,9 +1,13 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { ValidationService } from '../common/validation.sevice';
 import { Logger } from 'winston';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { KamarRepository } from './kamar.repository';
-import { CreateKamarRequest, KamarResponse } from 'src/model/kamar.model';
+import {
+  CreateKamarRequest,
+  GetKamarById,
+  KamarResponse,
+} from 'src/model/kamar.model';
 import { KamarValidation } from './kamar.validation';
 import { Kamar, User } from '@prisma/client';
 
@@ -17,6 +21,7 @@ export class KamarService {
 
   toKamarResponse(kamar: Kamar): KamarResponse {
     return {
+      id: kamar.id,
       jenisKamar: kamar.jenisKamar,
       tarifPerHari: kamar.tarifPerHari.toNumber(),
       createdBy: kamar.createdBy,
@@ -37,15 +42,31 @@ export class KamarService {
 
     const kamar = await this.kamarRepo.kamarCreate(user, kamarReq);
 
-    return {
-      jenisKamar: kamar.jenisKamar,
-      tarifPerHari: kamar.tarifPerHari.toNumber(),
-      createdBy: kamar.createdBy,
-    };
+    return this.toKamarResponse(kamar);
   }
 
   async getKamar(): Promise<KamarResponse[]> {
     const kamarAll = await this.kamarRepo.getKamarAll();
     return kamarAll.map((kamar) => this.toKamarResponse(kamar));
+  }
+
+  async checkKamar(id: number): Promise<Kamar> {
+    const kamar = await this.kamarRepo.checkKamar(id);
+    if (!kamar) {
+      throw new HttpException('Kamar not found', 404);
+    }
+
+    return kamar;
+  }
+
+  async getKamarById(req: GetKamarById): Promise<KamarResponse> {
+    const getKamar: GetKamarById = this.validationService.validate(
+      KamarValidation.GETID,
+      req,
+    );
+
+    const kamar = await this.checkKamar(getKamar.id);
+
+    return this.toKamarResponse(kamar);
   }
 }

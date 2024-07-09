@@ -4,8 +4,13 @@ export class CreateKamarRequest {
 }
 
 export class KamarResponse {
+  id: number;
   jenisKamar: string;
   tarifPerHari: number;
   createdBy?: string;
   updatedBy?: string;
+}
+
+export class GetKamarById {
+  id: number;
 }

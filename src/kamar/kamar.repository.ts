@@ -20,4 +20,12 @@ export class KamarRepository {
   async getKamarAll(): Promise<Kamar[]> {
     return await this.prisma.kamar.findMany();
   }
+
+  async checkKamar(id: number): Promise<Kamar> {
+    return await this.prisma.kamar.findFirst({
+      where: {
+        id: id,
+      },
+    });
+  }
 }
